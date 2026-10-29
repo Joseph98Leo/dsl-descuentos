@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Hola Mundo · DSL de Reglas de Descuento</title>
+  <meta name="description" content="GUI inicial del trabajo final de Compiladores (USIL 2026-2): un lenguaje de dominio específico para reglas de descuento.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@0,9..144,300..600,0..100;1,9..144,300..600,0..100&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="static/estilos.css">
+  <link rel="icon" href="static/icono.svg" type="image/svg+xml">
+</head>
+<body class="hola">
+
+<header class="cabecera">
+  <div class="contenedor">
+    <a class="marca" href="./">
+      <svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true"><circle cx="6" cy="6" r="3.2" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="16" cy="16" r="3.2" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M18 3 4 19" stroke="oklch(47% 0.13 35)" stroke-width="1.8" stroke-linecap="round"/></svg>
+      DSL Descuentos <span>· Compiladores USIL 2026-2</span>
+    </a>
+  </div>
+</header>
+
+<main class="hola-cuerpo">
+  <div class="contenedor">
+    <h1>Hola, <em>Mundo</em>.</h1>
+    <p>Esta es la GUI inicial de nuestro trabajo final: un lenguaje de dominio específico para que el área comercial escriba sus reglas de descuento y el sistema las valide sin pasar por TI.</p>
+<pre class="muestra" aria-label="Ejemplo de regla"><span class="k-reservada">SI</span> <span class="k-objeto">COMPRA</span><span class="k-delimitador">.</span>total <span class="k-relacional">&gt;</span> <span class="k-literal">500</span> <span class="k-reservada">ENTONCES</span> <span class="k-reservada">APLICAR DESCUENTO</span><span class="k-delimitador">(</span><span class="k-literal">10%</span><span class="k-delimitador">)</span></pre>
+    <div class="acciones">
+      <!-- Reemplazar por la URL que asigne Render al desplegar app.py -->
+      <a class="boton boton-primario" href="https://dsl-descuentos.onrender.com">
+        Abrir el analizador léxico
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+      </a>
+    </div>
+  </div>
+</main>
+
+<footer class="pie">
+  <div class="contenedor">
+    <p>Hernández Aguilar · Buitrón Pomasongo · Valdez Boza · Gutierrez Mamani</p>
+    <p>Docente: Delgado Enríquez, Héctor Odín</p>
+  </div>
+</footer>
+
+</body>
+</html>

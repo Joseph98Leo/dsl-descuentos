@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DSL de Reglas de Descuento · Analizador léxico</title>
+  <meta name="description" content="Analizador léxico de un lenguaje de dominio específico para reglas de descuento en comercio electrónico. Trabajo final de Compiladores, USIL 2026-2.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@0,9..144,300..600,0..100;1,9..144,300..600,0..100&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='estilos.css') }}">
+  <link rel="icon" href="{{ url_for('static', filename='icono.svg') }}" type="image/svg+xml">
+</head>
+<body>
+
+<header class="cabecera">
+  <div class="contenedor">
+    <a class="marca" href="{{ url_for('inicio') }}">
+      <svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true"><circle cx="6" cy="6" r="3.2" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="16" cy="16" r="3.2" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M18 3 4 19" stroke="oklch(47% 0.13 35)" stroke-width="1.8" stroke-linecap="round"/></svg>
+      DSL Descuentos <span>· Compiladores USIL 2026-2</span>
+    </a>
+    <nav class="nav" aria-label="Secciones">
+      <a href="#enunciado">Enunciado</a>
+      <a href="#analizador">Analizador</a>
+      <a href="#catalogo">Tokens y ER</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section class="portada">
+    <div class="contenedor">
+      <h1>Las promociones, escritas como <em>lenguaje</em>.</h1>
+      <p class="bajada">Un lenguaje de dominio específico para que el área comercial defina sus reglas de descuento sin tocar el código del sistema. Esta primera etapa reconoce los lexemas de cada regla y los clasifica en tokens.</p>
+<pre class="muestra" aria-label="Ejemplo de regla"><span class="k-reservada">SI</span> <span class="k-objeto">CLIENTE</span><span class="k-delimitador">.</span>nivel <span class="k-relacional">=</span> VIP <span class="k-logico">Y</span> <span class="k-objeto">COMPRA</span><span class="k-delimitador">.</span>total <span class="k-relacional">&gt;</span> <span class="k-literal">500</span> <span class="k-reservada">ENTONCES</span> <span class="k-reservada">APLICAR DESCUENTO</span><span class="k-delimitador">(</span><span class="k-literal">15%</span><span class="k-delimitador">)</span></pre>
+    </div>
+  </section>
+
+  <section class="seccion" id="enunciado">
+    <div class="contenedor">
+      <h2>Enunciado del proyecto</h2>
+      <div class="enunciado">
+        <div>
+          <h3>Implementación de un DSL para reglas de descuento en la validación de promociones de una empresa de comercio electrónico</h3>
+          <p>La empresa en estudio es una organización de comercio electrónico y retail ubicada en Lima que lanza continuamente promociones y descuentos dinámicos: por monto de compra, tipo de cliente, categoría o temporada. Hoy esas reglas están codificadas dentro del sistema transaccional, así que cada nueva promoción depende del área de TI y de un nuevo despliegue.</p>
+          <p>Tampoco existe un mecanismo formal que valide las reglas antes de activarlas. Eso produce ambigüedades, errores de configuración y descuentos acumulados que nadie autorizó y que afectan el margen comercial.</p>
+          <p>La propuesta es un lenguaje de dominio específico, formalizado con expresiones regulares, autómatas finitos y una gramática libre de contexto, con el que el área comercial escriba reglas declarativas y legibles que el sistema valide automáticamente.</p>
+
+          <h3>Objetivo general</h3>
+          <p>Determinar el efecto de un lenguaje de dominio específico para reglas de descuento en la validación automática de promociones en una empresa de comercio electrónico en Lima.</p>
+
+          <h3>Etapa 1: alcance de esta aplicación</h3>
+          <ol>
+            <li>Escribir reglas del lenguaje o subir un archivo que las contenga.</li>
+            <li>Reconocer cada lexema aplicando la coincidencia más larga.</li>
+            <li>Clasificar cada lexema en su token e informar su línea y columna.</li>
+            <li>Señalar los caracteres que no pertenecen al alfabeto del lenguaje.</li>
+          </ol>
+        </div>
+
+        <aside class="ficha" aria-label="Ficha del lenguaje">
+          <dl>
+            <div>
+              <dt>Forma general de una regla</dt>
+              <dd><pre class="gramatica"><span class="k-reservada">SI</span> &lt;condición&gt;
+<span class="k-reservada">ENTONCES APLICAR DESCUENTO</span>(&lt;valor&gt;)
+[<span class="k-reservada">SINO</span> …]</pre></dd>
+            </div>
+            <div>
+              <dt>Objetos del dominio</dt>
+              <dd><code class="k-objeto">CLIENTE</code>, <code class="k-objeto">COMPRA</code> y la función <code class="k-reservada">TIEMPO(…)</code></dd>
+            </div>
+            <div>
+              <dt>Herramientas previstas</dt>
+              <dd>Python + Flask (etapa 1), ANTLR y Java (análisis sintáctico y semántico), JUnit (pruebas)</dd>
+            </div>
+            <div>
+              <dt>Integrantes</dt>
+              <dd>
+                <ul>
+                  <li>Hernández Aguilar, Diego Patricio</li>
+                  <li>Buitrón Pomasongo, Adrián Samir</li>
+                  <li>Valdez Boza, Diego Manuel</li>
+                  <li>Gutierrez Mamani, Joseph Michael</li>
+                </ul>
+              </dd>
+            </div>
+            <div>
+              <dt>Docente</dt>
+              <dd>Delgado Enríquez, Héctor Odín</dd>
+            </div>
+          </dl>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <section class="seccion" id="analizador">
+    <div class="contenedor">
+      <h2>Analizador léxico</h2>
+      <p class="intro-seccion">Escribe tus reglas o sube un archivo <code>.dsl</code>, <code>.txt</code> o <code>.reglas</code>. El editor ya trae un ejemplo con varias reglas; puedes modificarlo libremente. Las líneas que empiezan con <code>//</code> son comentarios y se ignoran.</p>
+
+      {% if error_entrada %}
+      <div class="aviso" role="alert"><strong>No se pudo analizar.</strong> {{ error_entrada }}</div>
+      {% endif %}
+
+      <form id="formulario" method="post" action="{{ url_for('inicio') }}#resultados" enctype="multipart/form-data">
+        <div class="editor">
+          <div class="editor-barra">
+            <span class="archivo-nombre" id="archivo-nombre">{{ nombre_archivo or 'reglas.dsl' }}</span>
+            <input class="archivo-oculto" type="file" id="archivo" name="archivo" accept=".dsl,.txt,.reglas,text/plain">
+            <label class="boton" for="archivo">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 10.5V2.5M4.75 5.75 8 2.5l3.25 3.25M2.5 10v2.25c0 .7.55 1.25 1.25 1.25h8.5c.7 0 1.25-.55 1.25-1.25V10"/></svg>
+              Subir archivo
+            </label>
+            <button class="boton" type="button" id="cargar-ejemplo">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.75 8a5.25 5.25 0 1 0 1.6-3.78M2.5 2.5v2.75h2.75"/></svg>
+              Restaurar ejemplo
+            </button>
+            <button class="boton" type="button" id="limpiar">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8"/></svg>
+              Limpiar
+            </button>
+          </div>
+          <label for="codigo" class="archivo-oculto">Reglas del lenguaje</label>
+          <textarea id="codigo" name="codigo" spellcheck="false" autocapitalize="off" autocomplete="off" placeholder="SI COMPRA.total > 500 ENTONCES APLICAR DESCUENTO(10%)">{{ codigo }}</textarea>
+          <div class="editor-pie">
+            <span class="ayuda"><kbd>Ctrl</kbd> + <kbd>Enter</kbd> para analizar</span>
+            <button class="boton boton-primario" type="submit" id="analizar">
+              Generar tokens y lexemas
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+            </button>
+          </div>
+        </div>
+      </form>
+
+      {% if resultado %}
+      {% set total = resultado.tokens|length %}
+      {% set n_err = resultado.errores|length %}
+      <div class="resultados" id="resultados">
+        <div class="resultados-cabeza">
+          <h2>Resultado del análisis léxico</h2>
+          <p class="balance" aria-live="polite">
+            <b>{{ total }}</b> tokens en <b>{{ resultado.lineas|length }}</b> líneas ·
+            <b>{{ resultado.resumen|length - (1 if n_err else 0) }}</b> tipos de token ·
+            {% if n_err %}<b class="mal">{{ n_err }} {{ 'error léxico' if n_err == 1 else 'errores léxicos' }}</b>{% else %}<b class="bien">sin errores léxicos</b>{% endif %}
+          </p>
+        </div>
+
+        {% if n_err %}
+        <div class="aviso" role="alert">
+          <strong>Se encontraron caracteres fuera del alfabeto.</strong> Corrígelos y vuelve a analizar.
+          <ul>{% for e in resultado.errores %}<li>{{ e }}</li>{% endfor %}</ul>
+        </div>
+        {% endif %}
+
+        <h3>Código fuente coloreado por token</h3>
+        <ul class="leyenda">
+          {% for clave in ['reservada','logico','objeto','identificador','literal','relacional','delimitador','error'] %}
+          <li class="k-{{ clave }}"><i></i><span style="color: var(--tinta-suave)">{{ nombres[clave] }}</span></li>
+          {% endfor %}
+        </ul>
+        <pre class="fuente">{% for linea in resultado.lineas %}<span class="linea" style="--i: {{ loop.index0 }}">{% for texto, cat in linea %}{% if cat %}<span class="k-{{ cat }}">{{ texto }}</span>{% else %}{{ texto }}{% endif %}{% endfor %}</span>{% endfor %}</pre>
+
+        <div class="tablas">
+          <div>
+            <h3>Tabla de tokens</h3>
+            <p class="nota">Cada lexema en el orden en que lo leyó el analizador.</p>
+            <div class="marco-tabla alto">
+              <table>
+                <thead><tr><th scope="col">#</th><th scope="col">Lexema</th><th scope="col">Token</th><th scope="col">Línea</th><th scope="col">Col.</th></tr></thead>
+                <tbody>
+                  {% for t in resultado.tokens %}
+                  <tr>
+                    <td class="num">{{ loop.index }}</td>
+                    <td class="lexema k-{{ t.categoria }}">{{ t.lexema }}</td>
+                    <td><span class="chip k-{{ t.categoria }}">{{ t.token }}</span></td>
+                    <td class="num">{{ t.linea }}</td>
+                    <td class="num">{{ t.columna }}</td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div>
+            <h3>Lexemas agrupados por token</h3>
+            <p class="nota">Lexemas distintos reconocidos para cada token.</p>
+            <div class="marco-tabla">
+              <table>
+                <thead><tr><th scope="col">Token</th><th scope="col">Lexemas</th><th scope="col">Veces</th></tr></thead>
+                <tbody>
+                  {% for token, info in resultado.resumen %}
+                  <tr>
+                    <td><span class="chip k-{{ info.categoria }}">{{ token }}</span></td>
+                    <td class="lexemas">{% for lx in info.lexemas %}<span>{{ lx }}</span>{% endfor %}</td>
+                    <td class="num">{{ info.total }}</td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </section>
+
+  <section class="seccion" id="catalogo">
+    <div class="contenedor">
+      <h2>Tokens y expresiones regulares</h2>
+      <p class="intro-seccion">Catálogo de tokens del lenguaje. En las expresiones regulares, <code>L = [a-zA-Z]</code> y <code>D = [0-9]</code>. Las palabras reservadas se reconocen primero como identificadores y luego se comparan con la tabla de reservadas.</p>
+      <div class="marco-tabla">
+        <table>
+          <thead><tr><th scope="col">Token</th><th scope="col">Categoría</th><th scope="col">Lexemas de ejemplo</th><th scope="col">Expresión regular</th></tr></thead>
+          <tbody>
+            {% for token, cat, ejemplo, er in catalogo %}
+            <tr>
+              <td><span class="chip k-{{ cat }}">{{ token }}</span></td>
+              <td>{{ nombres[cat] }}</td>
+              <td class="lexemas">{{ ejemplo }}</td>
+              <td class="er">{{ er }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="pie">
+  <div class="contenedor">
+    <p>Trabajo final de Compiladores · Facultad de Ingeniería e Inteligencia Artificial · USIL, Lima 2026-2</p>
+    <p>Etapa 1: GUI inicial y análisis léxico</p>
+  </div>
+</footer>
+
+<script>
+  (function () {
+    var form = document.getElementById("formulario");
+    var codigo = document.getElementById("codigo");
+    var archivo = document.getElementById("archivo");
+    var nombre = document.getElementById("archivo-nombre");
+    var boton = document.getElementById("analizar");
+    var ejemplo = {{ ejemplo|tojson }};
+
+    // Al elegir un archivo se muestra su contenido en el editor; el servidor recibe el archivo.
+    archivo.addEventListener("change", function () {
+      var f = archivo.files[0];
+      if (!f) return;
+      nombre.textContent = f.name;
+      var lector = new FileReader();
+      lector.onload = function () { codigo.value = lector.result; };
+      lector.readAsText(f, "utf-8");
+    });
+
+    function soltarArchivo() { archivo.value = ""; }
+
+    document.getElementById("cargar-ejemplo").addEventListener("click", function () {
+      soltarArchivo();
+      codigo.value = ejemplo;
+      nombre.textContent = "reglas_ejemplo.dsl";
+      codigo.focus();
+    });
+
+    document.getElementById("limpiar").addEventListener("click", function () {
+      soltarArchivo();
+      codigo.value = "";
+      nombre.textContent = "reglas.dsl";
+      codigo.focus();
+    });
+
+    // Si el usuario edita el texto después de subir un archivo, se analiza lo escrito.
+    codigo.addEventListener("input", soltarArchivo);
+
+    codigo.addEventListener("keydown", function (e) {
+      if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
+        e.preventDefault();
+        form.requestSubmit();
+      }
+    });
+
+    var textoBoton = boton.firstChild.textContent;
+    form.addEventListener("submit", function () {
+      boton.disabled = true;
+      boton.firstChild.textContent = "Analizando… ";
+    });
+
+    // Al volver con "Atrás" el navegador puede restaurar el botón deshabilitado.
+    window.addEventListener("pageshow", function () {
+      boton.disabled = false;
+      boton.firstChild.textContent = textoBoton;
+    });
+  })();
+</script>
+</body>
+</html>
