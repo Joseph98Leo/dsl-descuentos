@@ -10,11 +10,16 @@ Integrantes: Hernández Aguilar, Diego Patricio · Buitrón Pomasongo, Adrián S
 |---|---|---|
 | 1 | GUI inicial: `index.html` con un "Hola Mundo", para subir a GitHub y publicar | `index.html` + `static/` |
 | 2 | App Python con Flask: enunciado del proyecto, bloque para **subir un archivo** o **escribir** el lenguaje (con ejemplo ya digitado) y generación de **TOKENS y LEXEMAS** | `app.py`, `lexer.py`, `templates/index.html` |
-| 3 | Publicación en un hosting gratuito (Render) | `render.yaml`, `requirements.txt` |
+| 3 | Publicación en hosting gratuito: **GitHub Pages** (versión estática con Pyodide) y, opcionalmente, Render (app Flask) | `analizador.html`, `render.yaml`, `requirements.txt` |
+
+**Publicado en:** https://joseph98leo.github.io/dsl-descuentos/ (Hola Mundo) → https://joseph98leo.github.io/dsl-descuentos/analizador.html (analizador)
+
+GitHub Pages solo sirve archivos estáticos y no puede ejecutar Flask. Por eso `analizador.html` carga **Pyodide** (Python compilado a WebAssembly) y ejecuta en el navegador **el mismo `lexer.py`** que usa `app.py`. La app Flask sigue en el repositorio para ejecutarla en local o en Render.
 
 ```
 Etapa1/
 ├── index.html              ← Hola Mundo (GitHub Pages)
+├── analizador.html         ← Analizador en GitHub Pages (Python vía Pyodide)
 ├── app.py                  ← Aplicación Flask
 ├── lexer.py                ← Analizador léxico (tokens y lexemas)
 ├── templates/index.html    ← Interfaz de la app Flask
@@ -77,12 +82,12 @@ git push -u origin main
 
 En el repositorio: **Settings → Pages → Source: Deploy from a branch → `main` / `(root)`**. Quedará en `https://<usuario>.github.io/dsl-descuentos/`.
 
-## Publicar la app Flask en Render (gratis)
+## (Opcional) Publicar la app Flask en Render (gratis)
 
 1. Entrar a https://render.com con la cuenta de GitHub.
 2. **New → Blueprint** y elegir el repositorio. Render lee `render.yaml` y crea el servicio `dsl-descuentos` en el plan gratuito.
    - O bien **New → Web Service**, con *Build command* `pip install -r requirements.txt` y *Start command* `gunicorn app:app`.
    - Si se sube la carpeta `Entregable2` completa en lugar de `Etapa1`, hay que poner **Root Directory = `Etapa1`**.
-3. Cuando termine el despliegue, copiar la URL (por ejemplo `https://dsl-descuentos.onrender.com`) y pegarla en el botón "Abrir el analizador léxico" de `index.html`.
+3. Cuando termine el despliegue, la app Flask quedará en una URL como `https://dsl-descuentos.onrender.com`.
 
 > En el plan gratuito, Render apaga el servicio tras 15 minutos sin uso; la primera visita después de eso tarda unos 30–50 segundos en responder.
