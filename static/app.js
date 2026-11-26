@@ -43,6 +43,8 @@
     return n;
   }
 
+  function plural(n, uno, varios) { return n + " " + (n === 1 ? uno : varios); }
+
   function chip(texto, cat) { return el("span", { "class": "chip k-" + cat }, texto); }
 
   function vaciar(n) { while (n.firstChild) n.removeChild(n.firstChild); return n; }
@@ -271,13 +273,13 @@
     var sem = r.semantico;
     var fases = [
       { nombre: "Léxico", estado: r.lexico.ok ? "ok" : "error", ms: r.tiempos_ms.lexico,
-        detalle: r.lexico.ok ? r.lexico.tokens.length + " tokens" : r.lexico.errores.length + " errores" },
+        detalle: r.lexico.ok ? plural(r.lexico.tokens.length, "token", "tokens") : plural(r.lexico.errores.length, "error", "errores") },
       { nombre: "Sintáctico", estado: !r.sintactico ? "omitido" : r.sintactico.ok ? "ok" : "error", ms: r.tiempos_ms.sintactico,
-        detalle: !r.sintactico ? "no se ejecutó" : r.sintactico.ok ? r.sintactico.reglas.length + " reglas" : r.sintactico.errores.length + " errores" },
+        detalle: !r.sintactico ? "no se ejecutó" : r.sintactico.ok ? plural(r.sintactico.reglas.length, "regla", "reglas") : plural(r.sintactico.errores.length, "error", "errores") },
       { nombre: "Semántico", estado: !sem ? "omitido" : !sem.ok ? "error" : (sem.colisiones.length || sem.advertencias.length) ? "aviso" : "ok",
         ms: r.tiempos_ms.semantico,
-        detalle: !sem ? "no se ejecutó" : !sem.ok ? sem.errores.length + " errores"
-          : sem.colisiones.length + " colisiones · " + sem.advertencias.length + " advertencias" },
+        detalle: !sem ? "no se ejecutó" : !sem.ok ? plural(sem.errores.length, "error", "errores")
+          : plural(sem.colisiones.length, "colisión", "colisiones") + " · " + plural(sem.advertencias.length, "advertencia", "advertencias") },
       { nombre: "JSON", estado: !sem ? "omitido" : sem.objeto_json.listo_para_activar ? "ok" : "aviso",
         detalle: !sem ? "no se generó" : sem.objeto_json.resumen.aceptadas + " de " + sem.objeto_json.resumen.reglas + " reglas aceptadas" }
     ];
