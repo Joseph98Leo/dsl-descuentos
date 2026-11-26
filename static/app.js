@@ -20,7 +20,7 @@
   ];
   var ARCHIVOS_PYTHON = [
     "lexer.py", "automatas.py", "sintactico.py", "semantico.py", "compilador.py", "dominio.json",
-    "generado/__init__.py", "generado/ReglasDescuentoLexer.py", "generado/ReglasDescuentoParser.py",
+    "generado/ReglasDescuentoLexer.py", "generado/ReglasDescuentoParser.py",
     "generado/ReglasDescuentoVisitor.py"
   ];
   var PYODIDE = "https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js";
@@ -135,6 +135,7 @@
     var dir = py.FS.cwd();
     py.FS.mkdirTree(dir + "/generado");
     ARCHIVOS_PYTHON.forEach(function (f, i) { py.FS.writeFile(dir + "/" + f, textos[i]); });
+    py.FS.writeFile(dir + "/generado/__init__.py", "");  // GitHub Pages (Jekyll) no publica archivos que empiezan con "_"
     py.runPython([
       "import json",
       "import compilador, automatas, semantico",
