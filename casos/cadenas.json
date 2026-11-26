@@ -1,0 +1,41 @@
+{
+  "_descripcion": "Cadenas de prueba del analizador. 'aceptadas' deben superar las fases léxica y sintáctica; 'rechazadas' deben fallar en la fase indicada.",
+  "aceptadas": [
+    "SI CLIENTE.nivel = VIP ENTONCES APLICAR DESCUENTO(15%)",
+    "SI CLIENTE.nivel = VIP Y COMPRA.total > 500 Y TIEMPO(enrango) ENTONCES APLICAR DESCUENTO(15%)",
+    "SI CLIENTE.nivel = VIP ENTONCES APLICAR DESCUENTO(15%) SINO SI COMPRA.total > 500 ENTONCES APLICAR DESCUENTO(10%) SINO APLICAR DESCUENTO(0%)",
+    "SI COMPRA.total >= 300 ENTONCES APLICAR DESCUENTO(10%) SINO APLICAR DESCUENTO(0%)",
+    "SI NO (CLIENTE.tipo == nuevo) O COMPRA.cantidad != 1 ENTONCES APLICAR DESCUENTO(5%)",
+    "SI (CLIENTE.nivel = ORO O CLIENTE.nivel = PLATA) Y COMPRA.total > 200 ENTONCES APLICAR DESCUENTO(7%)",
+    "SI NO NO TIEMPO(navidad) ENTONCES APLICAR DESCUENTO(3%)",
+    "SI CLIENTE.edad >= 60 ENTONCES APLICAR DESCUENTO(12%)",
+    "SI COMPRA.canal = app Y COMPRA.cantidad <= 2 ENTONCES APLICAR DESCUENTO(4%)",
+    "// comentario\nSI COMPRA.total < 50 ENTONCES APLICAR DESCUENTO(1%)\nSI COMPRA.total > 1000 ENTONCES APLICAR DESCUENTO(20%)",
+    "SI CLIENTE.compras > 10 ENTONCES APLICAR DESCUENTO(6%) SINO SI CLIENTE.compras > 5 ENTONCES APLICAR DESCUENTO(3%)",
+    "SI ((COMPRA.total > 100)) ENTONCES APLICAR DESCUENTO(2%)"
+  ],
+  "rechazadas": [
+    { "cadena": "SI CLIENTE.nivel = VIP & COMPRA.total > 500 ENTONCES APLICAR DESCUENTO(15%)", "fase": "léxico", "linea": 1 },
+    { "cadena": "SI COMPRA.total > $500 ENTONCES APLICAR DESCUENTO(15%)", "fase": "léxico", "linea": 1 },
+    { "cadena": "SI COMPRA.total >= 200 ENTONCES APLICAR DESCUENTO(8.5%) ;", "fase": "léxico", "linea": 1 },
+    { "cadena": "SI CLIENTE.nivel = VIP COMPRA.total > 500 ENTONCES APLICAR DESCUENTO(15%)", "fase": "sintáctico", "linea": 1 },
+    { "cadena": "SI COMPRA.total >= 300 ENTONCES DESCUENTO(10%)", "fase": "sintáctico", "linea": 1 },
+    { "cadena": "SI COMPRA.total > 500 APLICAR DESCUENTO(10%)", "fase": "sintáctico", "linea": 1 },
+    { "cadena": "SI COMPRA.total > 500 ENTONCES APLICAR DESCUENTO(10)", "fase": "sintáctico", "linea": 1 },
+    { "cadena": "SI total > 500 ENTONCES APLICAR DESCUENTO(10%)", "fase": "sintáctico", "linea": 1 },
+    { "cadena": "SI COMPRA.total > ENTONCES APLICAR DESCUENTO(10%)", "fase": "sintáctico", "linea": 1 },
+    { "cadena": "SI (COMPRA.total > 500 ENTONCES APLICAR DESCUENTO(10%)", "fase": "sintáctico", "linea": 1 },
+    { "cadena": "SINO APLICAR DESCUENTO(10%)", "fase": "sintáctico", "linea": 1 },
+    { "cadena": "SI COMPRA.total > 500 ENTONCES APLICAR DESCUENTO(10%) SINO", "fase": "sintáctico", "linea": 1 },
+    { "cadena": "si COMPRA.total > 500 ENTONCES APLICAR DESCUENTO(10%)", "fase": "sintáctico", "linea": 1 },
+    { "cadena": "SI COMPRA.total > 500 Y ENTONCES APLICAR DESCUENTO(10%)", "fase": "sintáctico", "linea": 1 },
+    { "cadena": "SI CLIENTE.saldo > 100 ENTONCES APLICAR DESCUENTO(5%)", "fase": "semántico", "linea": 1 },
+    { "cadena": "SI COMPRA.total > 500 Y COMPRA.total < 100 ENTONCES APLICAR DESCUENTO(10%)", "fase": "semántico", "linea": 1 },
+    { "cadena": "SI CLIENTE.nivel = DIAMANTE ENTONCES APLICAR DESCUENTO(10%)", "fase": "semántico", "linea": 1 },
+    { "cadena": "SI CLIENTE.nivel = VIP ENTONCES APLICAR DESCUENTO(120%)", "fase": "semántico", "linea": 1 },
+    { "cadena": "SI TIEMPO(verano) ENTONCES APLICAR DESCUENTO(5%)", "fase": "semántico", "linea": 1 },
+    { "cadena": "SI COMPRA.total = VIP ENTONCES APLICAR DESCUENTO(5%)", "fase": "semántico", "linea": 1 },
+    { "cadena": "SI CLIENTE.nivel > 5 ENTONCES APLICAR DESCUENTO(5%)", "fase": "semántico", "linea": 1 },
+    { "cadena": "SI COMPRA.cantidad < 1 ENTONCES APLICAR DESCUENTO(5%)", "fase": "semántico", "linea": 1 }
+  ]
+}
