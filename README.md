@@ -1,93 +1,114 @@
-# DSL de Reglas de Descuento — Etapa 1
+# Compilador DSL de Reglas de Descuento
 
 Trabajo final de **Compiladores** · USIL 2026-2 · Docente: Delgado Enríquez, Héctor Odín
 
 Integrantes: Hernández Aguilar, Diego Patricio · Buitrón Pomasongo, Adrián Samir · Valdez Boza, Diego Manuel · Gutierrez Mamani, Joseph Michael
 
-## Qué incluye la Etapa 1
+Un lenguaje de dominio específico (DSL) para que el área comercial escriba reglas de descuento, y su compilador, que las valida antes de activarlas:
 
-| Paso | Requisito | Archivo |
+```
+SI CLIENTE.nivel = VIP Y COMPRA.total > 500 ENTONCES APLICAR DESCUENTO(15%)
+SINO SI CLIENTE.nivel = VIP ENTONCES APLICAR DESCUENTO(10%)
+SINO APLICAR DESCUENTO(0%)
+```
+
+```
+texto ─► 1. léxico ─► 3. sintáctico (ANTLR) ─► 4. semántico ─► objeto JSON
+            │
+            └► 2. autómatas de cada token (ER → AFND → AFD → AFD mínimo)
+```
+
+## Etapas del proyecto
+
+| Etapa | Qué pide el curso | Dónde está |
 |---|---|---|
-| 1 | GUI inicial: `index.html` con un "Hola Mundo", para subir a GitHub y publicar | `index.html` + `static/` |
-| 2 | App Python con Flask: enunciado del proyecto, bloque para **subir un archivo** o **escribir** el lenguaje (con ejemplo ya digitado) y generación de **TOKENS y LEXEMAS** | `app.py`, `lexer.py`, `templates/index.html` |
-| 3 | Publicación en hosting gratuito: **GitHub Pages** (versión estática con Pyodide) y, opcionalmente, Render (app Flask) | `analizador.html`, `render.yaml`, `requirements.txt` |
+| **1** | GUI inicial ("Hola Mundo"), app Flask con el enunciado, subir o escribir el lenguaje, **tokens y lexemas**, publicación en hosting | `index.html`, `app.py`, `lexer.py`, `analizador.html` |
+| **2** | Para cada token: **ER, AFND, AFD, tabla de transiciones, quíntupla y gráfico generado desde el código** (no imagen) | `automatas.py` |
+| **3** | **Gramática**, **árbol** y **metacompilador** (lexer y parser generados) | `gramatica/ReglasDescuento.g4` → ANTLR 4.13.2 → `generado/`; `sintactico.py` |
+| **4** | **Integración**, **análisis semántico**, **pruebas**, **resultados** e **impresión en PDF** | `semantico.py`, `compilador.py`, `tests/`, `evaluar.py`, `resultados/`, botón "Imprimir / guardar PDF" |
 
-**Publicado en:** https://joseph98leo.github.io/dsl-descuentos/ (Hola Mundo) → https://joseph98leo.github.io/dsl-descuentos/analizador.html (analizador)
+### Qué hace cada fase
 
-GitHub Pages solo sirve archivos estáticos y no puede ejecutar Flask. Por eso `analizador.html` carga **Pyodide** (Python compilado a WebAssembly) y ejecuta en el navegador **el mismo `lexer.py`** que usa `app.py`. La app Flask sigue en el repositorio para ejecutarla en local o en Render.
+- **Léxico** (`lexer.py`): coincidencia más larga, palabras reservadas, comentarios `//`, línea y columna de cada token y de cada carácter fuera del alfabeto. Una prueba comprueba que da exactamente los mismos tokens que el lexer generado por ANTLR.
+- **Autómatas** (`automatas.py`): analiza la ER de cada token del catálogo y construye el AFND por el método de Thompson, el AFD por el método de subconjuntos (indicando qué estados del AFND forma cada estado del AFD) y el AFD mínimo por partición de estados. Genera la quíntupla, la tabla de transiciones y el gráfico en lenguaje DOT, que el navegador dibuja con viz.js. En la página se puede probar una cadena y ver el recorrido por los estados.
+- **Sintáctico** (`sintactico.py`): usa el analizador que ANTLR genera desde la GLC del informe. Reporta los errores en español con línea y columna, y construye para cada regla el **árbol de derivación** y las **derivaciones por la izquierda y por la derecha**, paso a paso con la producción aplicada.
+- **Semántico** (`semantico.py`, `dominio.json`): consulta la tabla de símbolos del dominio y detecta:
+  - atributos inexistentes, tipos incompatibles, valores no permitidos, operadores inválidos para atributos categóricos, periodos de `TIEMPO(…)` desconocidos y descuentos fuera de 0–100 %;
+  - **contradicciones** (una condición que nunca se cumple) y **ramas inalcanzables** (un `SINO SI` que ya cubren las ramas anteriores);
+  - **colisiones**: dos reglas que pueden aplicarse a la misma compra y acumular descuentos, con un ejemplo concreto de transacción. La detección es exacta: cada condición se lleva a forma normal disyuntiva y se resuelve sobre intervalos (numéricos) y conjuntos (categóricos).
+- **JSON**: un objeto por regla con su estado (`aceptada`, `en_colision` o `rechazada`), sus ramas, sus condiciones y su descuento, listo para un motor de reglas. Se puede descargar desde la página.
 
-```
-Etapa1/
-├── index.html              ← Hola Mundo (GitHub Pages)
-├── analizador.html         ← Analizador en GitHub Pages (Python vía Pyodide)
-├── app.py                  ← Aplicación Flask
-├── lexer.py                ← Analizador léxico (tokens y lexemas)
-├── templates/index.html    ← Interfaz de la app Flask
-├── static/estilos.css      ← Estilos compartidos por ambas páginas
-├── static/icono.svg
-├── ejemplos/
-│   ├── reglas_ejemplo.dsl      ← reglas válidas (también precargadas en el editor)
-│   └── reglas_con_errores.dsl  ← para probar los errores léxicos
-├── requirements.txt
-└── render.yaml             ← Configuración de despliegue en Render
-```
+## Resultados
+
+`python evaluar.py` mide los objetivos específicos y guarda el detalle en `resultados/metricas.md`:
+
+| Objetivo | Meta | Resultado |
+|---|---|---|
+| OE1 · Tokens modelados (ER, AFND, AFD, quíntupla) | ≥ 15 | 17 |
+| OE2 · Cadenas de prueba clasificadas correctamente | ≥ 5 | 34 de 34 (100 %) |
+| OE3 · Solapamientos configurados detectados | ≥ 90 % | 13 de 13 (100 %), 0 falsos positivos |
+| OE4 · Objetos JSON generados | uno por regla | 13 |
+| OE5 · Pruebas automatizadas exitosas | > 95 % | 80 de 80 (100 %) |
+| RNF · Tiempo de análisis por regla | < 200 ms | ~0,3 ms en promedio |
+
+Los casos de prueba están en `casos/cadenas.json` y `casos/colisiones.json`.
 
 ## Ejecutar en local
 
 ```bash
-cd Etapa1
 python3 -m venv .venv
 source .venv/bin/activate          # Windows: .venv\Scripts\activate
-pip install -r requirements.txt
-python app.py
+pip install -r requirements-dev.txt
+python app.py                      # http://127.0.0.1:5000
 ```
 
-Abrir http://127.0.0.1:5000
-
-## Cómo funciona el analizador léxico
-
-`lexer.py` recorre la entrada de izquierda a derecha aplicando la **coincidencia más larga**:
-
-- Las palabras se reconocen primero con la ER de identificador `(L|_)(L|D|_)*` y luego se buscan en la tabla de palabras reservadas (`SI`, `SINO`, `ENTONCES`, `APLICAR`, `DESCUENTO`, `Y`, `O`, `NO`, `CLIENTE`, `COMPRA`, `TIEMPO`).
-- `T_PORCENTAJE` (`D+%`) se prueba antes que `T_NUM` (`D+`), y los operadores de dos caracteres (`>=`, `<=`, `==`, `!=`) antes que los de uno.
-- Se ignoran los espacios, los saltos de línea y los comentarios `// ...`.
-- Cualquier carácter fuera del alfabeto produce `T_ERROR`, con su línea y columna.
-
-| Token | Expresión regular | Ejemplo |
-|---|---|---|
-| T_SI, T_SINO, T_ENTONCES, T_APLICAR, T_DESCUENTO, T_TIEMPO | la propia palabra | `SI` |
-| T_AND, T_OR, T_NOT | `Y`, `O`, `NO` | `Y` |
-| T_OBJETO | `(CLIENTE\|COMPRA)` | `CLIENTE` |
-| T_ID | `(L\|_)(L\|D\|_)*` | `nivel`, `VIP` |
-| T_NUM | `D+` | `500` |
-| T_PORCENTAJE | `D+%` | `15%` |
-| T_RELOP | `= \| == \| != \| >(=)? \| <(=)?` | `>=` |
-| T_PUNTO, T_PARI, T_PARD | `\.`, `\(`, `\)` | `.` `(` `)` |
-
-También hay un endpoint JSON: `POST /api/tokens` con `{"codigo": "SI COMPRA.total > 500 ..."}`.
-
-## Subir a GitHub
+Otras órdenes:
 
 ```bash
-cd Etapa1
-git init
-git add .
-git commit -m "Etapa 1: GUI inicial y analizador léxico"
-git branch -M main
-git remote add origin https://github.com/<usuario>/dsl-descuentos.git
-git push -u origin main
+pytest                                     # pruebas automatizadas (80)
+python evaluar.py                          # métricas → resultados/metricas.md
+python compilador.py ejemplos/reglas_ejemplo.dsl   # compilar desde la terminal
+python automatas.py                        # resumen de estados de cada autómata
+bash herramientas/generar_parser.sh        # regenerar el parser con ANTLR (requiere Java)
 ```
 
-### Publicar el `index.html` (Hola Mundo) en GitHub Pages
+El analizador generado ya está en `generado/`, así que para ejecutar la app **no hace falta Java**: solo para volver a generarlo si se cambia la gramática.
 
-En el repositorio: **Settings → Pages → Source: Deploy from a branch → `main` / `(root)`**. Quedará en `https://<usuario>.github.io/dsl-descuentos/`.
+## API
 
-## (Opcional) Publicar la app Flask en Render (gratis)
+| Método | Ruta | Descripción |
+|---|---|---|
+| `POST` | `/api/compilar` | `{"codigo": "..."}` o un archivo `.dsl/.txt/.reglas` en el campo `archivo`. Devuelve todas las fases. |
+| `POST` | `/api/tokens` | Solo el análisis léxico. |
+| `GET` | `/api/automatas` | ER, AFND, AFD y AFD mínimo de cada token. |
+| `GET` | `/api/catalogo` | Catálogo de tokens y tabla de símbolos del dominio. |
 
-1. Entrar a https://render.com con la cuenta de GitHub.
-2. **New → Blueprint** y elegir el repositorio. Render lee `render.yaml` y crea el servicio `dsl-descuentos` en el plan gratuito.
-   - O bien **New → Web Service**, con *Build command* `pip install -r requirements.txt` y *Start command* `gunicorn app:app`.
-   - Si se sube la carpeta `Entregable2` completa en lugar de `Etapa1`, hay que poner **Root Directory = `Etapa1`**.
-3. Cuando termine el despliegue, la app Flask quedará en una URL como `https://dsl-descuentos.onrender.com`.
+## Publicación
 
-> En el plan gratuito, Render apaga el servicio tras 15 minutos sin uso; la primera visita después de eso tarda unos 30–50 segundos en responder.
+- **GitHub Pages** (sin servidor): `index.html` es el "Hola Mundo" y `analizador.html` el compilador. Como Pages no ejecuta Flask, la página carga **Pyodide** (Python en WebAssembly), instala el runtime de ANTLR y ejecuta en el navegador **los mismos módulos `.py`**. Si encuentra la API de Flask, la usa en su lugar.
+- **Render** (app Flask): `render.yaml` ya está configurado (`gunicorn app:app`).
+
+## Estructura
+
+```
+├── index.html                 Hola Mundo (Etapa 1)
+├── analizador.html            Interfaz del compilador (Flask y GitHub Pages)
+├── app.py                     Aplicación Flask y API
+├── lexer.py                   Etapa 1 · analizador léxico
+├── automatas.py               Etapa 2 · ER → AFND → AFD → AFD mínimo
+├── gramatica/ReglasDescuento.g4   Etapa 3 · GLC para ANTLR
+├── generado/                  Etapa 3 · lexer y parser generados por ANTLR
+├── sintactico.py              Etapa 3 · errores, árbol, derivaciones, AST
+├── semantico.py               Etapa 4 · validaciones, colisiones, JSON
+├── dominio.json               Tabla de símbolos del dominio
+├── compilador.py              Integración de todas las fases
+├── evaluar.py                 Métricas de los objetivos
+├── casos/                     Cadenas de prueba y colisiones configuradas
+├── ejemplos/                  Archivos .dsl de ejemplo (válidos y con errores)
+├── tests/                     Pruebas automatizadas (pytest)
+├── resultados/                Métricas generadas
+├── herramientas/generar_parser.sh
+├── static/                    estilos.css, app.js, icono.svg
+├── requirements.txt / requirements-dev.txt
+└── render.yaml
+```

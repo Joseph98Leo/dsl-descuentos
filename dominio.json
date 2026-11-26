@@ -1,0 +1,24 @@
+{
+  "_descripcion": "Tabla de símbolos del dominio: atributos válidos de cada objeto, su tipo y sus valores permitidos. El análisis semántico la consulta; el área comercial puede ampliarla sin modificar el código.",
+  "objetos": {
+    "CLIENTE": {
+      "nivel": { "tipo": "categorico", "valores": ["VIP", "ORO", "PLATA", "BRONCE", "REGULAR"], "descripcion": "Nivel de fidelización del cliente" },
+      "tipo": { "tipo": "categorico", "valores": ["nuevo", "frecuente", "corporativo"], "descripcion": "Tipo de cliente" },
+      "edad": { "tipo": "numerico", "entero": true, "min": 18, "max": 120, "descripcion": "Edad en años" },
+      "compras": { "tipo": "numerico", "entero": true, "min": 0, "descripcion": "Número de compras anteriores" }
+    },
+    "COMPRA": {
+      "total": { "tipo": "numerico", "entero": false, "min": 0, "descripcion": "Monto total de la compra en soles" },
+      "cantidad": { "tipo": "numerico", "entero": true, "min": 1, "descripcion": "Cantidad de productos" },
+      "categoria": { "tipo": "categorico", "valores": ["electronica", "ropa", "hogar", "alimentos", "juguetes"], "descripcion": "Categoría principal de la compra" },
+      "canal": { "tipo": "categorico", "valores": ["web", "app", "tienda"], "descripcion": "Canal de venta" }
+    }
+  },
+  "periodos": {
+    "enrango": "Dentro de la vigencia de la campaña",
+    "cyberwow": "Campaña Cyber Wow",
+    "blackfriday": "Black Friday",
+    "navidad": "Campaña de Navidad",
+    "findesemana": "Sábados y domingos"
+  }
+}

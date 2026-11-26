@@ -1,0 +1,462 @@
+{
+  "fecha": "2026-11-26T00:28:00",
+  "OE1": {
+    "tokens": 17,
+    "detalle": [
+      {
+        "token": "T_SI",
+        "er": "SI",
+        "afnd": 3,
+        "afd": 3,
+        "minimo": 3
+      },
+      {
+        "token": "T_SINO",
+        "er": "SINO",
+        "afnd": 5,
+        "afd": 5,
+        "minimo": 5
+      },
+      {
+        "token": "T_ENTONCES",
+        "er": "ENTONCES",
+        "afnd": 9,
+        "afd": 9,
+        "minimo": 9
+      },
+      {
+        "token": "T_APLICAR",
+        "er": "APLICAR",
+        "afnd": 8,
+        "afd": 8,
+        "minimo": 8
+      },
+      {
+        "token": "T_DESCUENTO",
+        "er": "DESCUENTO",
+        "afnd": 10,
+        "afd": 10,
+        "minimo": 10
+      },
+      {
+        "token": "T_AND",
+        "er": "Y",
+        "afnd": 2,
+        "afd": 2,
+        "minimo": 2
+      },
+      {
+        "token": "T_OR",
+        "er": "O",
+        "afnd": 2,
+        "afd": 2,
+        "minimo": 2
+      },
+      {
+        "token": "T_NOT",
+        "er": "NO",
+        "afnd": 3,
+        "afd": 3,
+        "minimo": 3
+      },
+      {
+        "token": "T_OBJETO",
+        "er": "(CLIENTE|COMPRA)",
+        "afnd": 17,
+        "afd": 13,
+        "minimo": 12
+      },
+      {
+        "token": "T_TIEMPO",
+        "er": "TIEMPO",
+        "afnd": 7,
+        "afd": 7,
+        "minimo": 7
+      },
+      {
+        "token": "T_ID",
+        "er": "(L|_)(L|D|_)*",
+        "afnd": 15,
+        "afd": 6,
+        "minimo": 2
+      },
+      {
+        "token": "T_NUM",
+        "er": "D+",
+        "afnd": 4,
+        "afd": 2,
+        "minimo": 2
+      },
+      {
+        "token": "T_PORCENTAJE",
+        "er": "D+%",
+        "afnd": 5,
+        "afd": 3,
+        "minimo": 3
+      },
+      {
+        "token": "T_RELOP",
+        "er": "= | == | != | >(=)? | <(=)?",
+        "afnd": 20,
+        "afd": 9,
+        "minimo": 4
+      },
+      {
+        "token": "T_PUNTO",
+        "er": "\\.",
+        "afnd": 2,
+        "afd": 2,
+        "minimo": 2
+      },
+      {
+        "token": "T_PARI",
+        "er": "\\(",
+        "afnd": 2,
+        "afd": 2,
+        "minimo": 2
+      },
+      {
+        "token": "T_PARD",
+        "er": "\\)",
+        "afnd": 2,
+        "afd": 2,
+        "minimo": 2
+      }
+    ]
+  },
+  "OE2": {
+    "aceptadas": {
+      "total": 12,
+      "correctas": 12
+    },
+    "rechazadas": {
+      "total": 22,
+      "correctas": 22
+    },
+    "exactitud": 100.0,
+    "detalle": [
+      {
+        "cadena": "SI CLIENTE.nivel = VIP ENTONCES APLICAR DESCUENTO(15%)",
+        "esperado": "aceptada",
+        "obtenido": "aceptada",
+        "ok": true
+      },
+      {
+        "cadena": "SI CLIENTE.nivel = VIP Y COMPRA.total > 500 Y TIEMPO(enrango) ENTONCES APLICAR DESCUENTO(15%)",
+        "esperado": "aceptada",
+        "obtenido": "aceptada",
+        "ok": true
+      },
+      {
+        "cadena": "SI CLIENTE.nivel = VIP ENTONCES APLICAR DESCUENTO(15%) SINO SI COMPRA.total > 500 ENTONCES APLICAR DESCUENTO(10%) SINO APLICAR DESCUENTO(0%)",
+        "esperado": "aceptada",
+        "obtenido": "aceptada",
+        "ok": true
+      },
+      {
+        "cadena": "SI COMPRA.total >= 300 ENTONCES APLICAR DESCUENTO(10%) SINO APLICAR DESCUENTO(0%)",
+        "esperado": "aceptada",
+        "obtenido": "aceptada",
+        "ok": true
+      },
+      {
+        "cadena": "SI NO (CLIENTE.tipo == nuevo) O COMPRA.cantidad != 1 ENTONCES APLICAR DESCUENTO(5%)",
+        "esperado": "aceptada",
+        "obtenido": "aceptada",
+        "ok": true
+      },
+      {
+        "cadena": "SI (CLIENTE.nivel = ORO O CLIENTE.nivel = PLATA) Y COMPRA.total > 200 ENTONCES APLICAR DESCUENTO(7%)",
+        "esperado": "aceptada",
+        "obtenido": "aceptada",
+        "ok": true
+      },
+      {
+        "cadena": "SI NO NO TIEMPO(navidad) ENTONCES APLICAR DESCUENTO(3%)",
+        "esperado": "aceptada",
+        "obtenido": "aceptada",
+        "ok": true
+      },
+      {
+        "cadena": "SI CLIENTE.edad >= 60 ENTONCES APLICAR DESCUENTO(12%)",
+        "esperado": "aceptada",
+        "obtenido": "aceptada",
+        "ok": true
+      },
+      {
+        "cadena": "SI COMPRA.canal = app Y COMPRA.cantidad <= 2 ENTONCES APLICAR DESCUENTO(4%)",
+        "esperado": "aceptada",
+        "obtenido": "aceptada",
+        "ok": true
+      },
+      {
+        "cadena": "// comentario\nSI COMPRA.total < 50 ENTONCES APLICAR DESCUENTO(1%)\nSI COMPRA.total > 1000 ENTONCES APLICAR DESCUENTO(20%)",
+        "esperado": "aceptada",
+        "obtenido": "aceptada",
+        "ok": true
+      },
+      {
+        "cadena": "SI CLIENTE.compras > 10 ENTONCES APLICAR DESCUENTO(6%) SINO SI CLIENTE.compras > 5 ENTONCES APLICAR DESCUENTO(3%)",
+        "esperado": "aceptada",
+        "obtenido": "aceptada",
+        "ok": true
+      },
+      {
+        "cadena": "SI ((COMPRA.total > 100)) ENTONCES APLICAR DESCUENTO(2%)",
+        "esperado": "aceptada",
+        "obtenido": "aceptada",
+        "ok": true
+      },
+      {
+        "cadena": "SI CLIENTE.nivel = VIP & COMPRA.total > 500 ENTONCES APLICAR DESCUENTO(15%)",
+        "esperado": "rechazada (léxico)",
+        "obtenido": "rechazada (léxico)",
+        "ok": true
+      },
+      {
+        "cadena": "SI COMPRA.total > $500 ENTONCES APLICAR DESCUENTO(15%)",
+        "esperado": "rechazada (léxico)",
+        "obtenido": "rechazada (léxico)",
+        "ok": true
+      },
+      {
+        "cadena": "SI COMPRA.total >= 200 ENTONCES APLICAR DESCUENTO(8.5%) ;",
+        "esperado": "rechazada (léxico)",
+        "obtenido": "rechazada (léxico)",
+        "ok": true
+      },
+      {
+        "cadena": "SI CLIENTE.nivel = VIP COMPRA.total > 500 ENTONCES APLICAR DESCUENTO(15%)",
+        "esperado": "rechazada (sintáctico)",
+        "obtenido": "rechazada (sintáctico)",
+        "ok": true
+      },
+      {
+        "cadena": "SI COMPRA.total >= 300 ENTONCES DESCUENTO(10%)",
+        "esperado": "rechazada (sintáctico)",
+        "obtenido": "rechazada (sintáctico)",
+        "ok": true
+      },
+      {
+        "cadena": "SI COMPRA.total > 500 APLICAR DESCUENTO(10%)",
+        "esperado": "rechazada (sintáctico)",
+        "obtenido": "rechazada (sintáctico)",
+        "ok": true
+      },
+      {
+        "cadena": "SI COMPRA.total > 500 ENTONCES APLICAR DESCUENTO(10)",
+        "esperado": "rechazada (sintáctico)",
+        "obtenido": "rechazada (sintáctico)",
+        "ok": true
+      },
+      {
+        "cadena": "SI total > 500 ENTONCES APLICAR DESCUENTO(10%)",
+        "esperado": "rechazada (sintáctico)",
+        "obtenido": "rechazada (sintáctico)",
+        "ok": true
+      },
+      {
+        "cadena": "SI COMPRA.total > ENTONCES APLICAR DESCUENTO(10%)",
+        "esperado": "rechazada (sintáctico)",
+        "obtenido": "rechazada (sintáctico)",
+        "ok": true
+      },
+      {
+        "cadena": "SI (COMPRA.total > 500 ENTONCES APLICAR DESCUENTO(10%)",
+        "esperado": "rechazada (sintáctico)",
+        "obtenido": "rechazada (sintáctico)",
+        "ok": true
+      },
+      {
+        "cadena": "SINO APLICAR DESCUENTO(10%)",
+        "esperado": "rechazada (sintáctico)",
+        "obtenido": "rechazada (sintáctico)",
+        "ok": true
+      },
+      {
+        "cadena": "SI COMPRA.total > 500 ENTONCES APLICAR DESCUENTO(10%) SINO",
+        "esperado": "rechazada (sintáctico)",
+        "obtenido": "rechazada (sintáctico)",
+        "ok": true
+      },
+      {
+        "cadena": "si COMPRA.total > 500 ENTONCES APLICAR DESCUENTO(10%)",
+        "esperado": "rechazada (sintáctico)",
+        "obtenido": "rechazada (sintáctico)",
+        "ok": true
+      },
+      {
+        "cadena": "SI COMPRA.total > 500 Y ENTONCES APLICAR DESCUENTO(10%)",
+        "esperado": "rechazada (sintáctico)",
+        "obtenido": "rechazada (sintáctico)",
+        "ok": true
+      },
+      {
+        "cadena": "SI CLIENTE.saldo > 100 ENTONCES APLICAR DESCUENTO(5%)",
+        "esperado": "rechazada (semántico)",
+        "obtenido": "rechazada (semántico)",
+        "ok": true
+      },
+      {
+        "cadena": "SI COMPRA.total > 500 Y COMPRA.total < 100 ENTONCES APLICAR DESCUENTO(10%)",
+        "esperado": "rechazada (semántico)",
+        "obtenido": "rechazada (semántico)",
+        "ok": true
+      },
+      {
+        "cadena": "SI CLIENTE.nivel = DIAMANTE ENTONCES APLICAR DESCUENTO(10%)",
+        "esperado": "rechazada (semántico)",
+        "obtenido": "rechazada (semántico)",
+        "ok": true
+      },
+      {
+        "cadena": "SI CLIENTE.nivel = VIP ENTONCES APLICAR DESCUENTO(120%)",
+        "esperado": "rechazada (semántico)",
+        "obtenido": "rechazada (semántico)",
+        "ok": true
+      },
+      {
+        "cadena": "SI TIEMPO(verano) ENTONCES APLICAR DESCUENTO(5%)",
+        "esperado": "rechazada (semántico)",
+        "obtenido": "rechazada (semántico)",
+        "ok": true
+      },
+      {
+        "cadena": "SI COMPRA.total = VIP ENTONCES APLICAR DESCUENTO(5%)",
+        "esperado": "rechazada (semántico)",
+        "obtenido": "rechazada (semántico)",
+        "ok": true
+      },
+      {
+        "cadena": "SI CLIENTE.nivel > 5 ENTONCES APLICAR DESCUENTO(5%)",
+        "esperado": "rechazada (semántico)",
+        "obtenido": "rechazada (semántico)",
+        "ok": true
+      },
+      {
+        "cadena": "SI COMPRA.cantidad < 1 ENTONCES APLICAR DESCUENTO(5%)",
+        "esperado": "rechazada (semántico)",
+        "obtenido": "rechazada (semántico)",
+        "ok": true
+      }
+    ]
+  },
+  "OE3": {
+    "casos": 15,
+    "solapamientos_configurados": 13,
+    "detectados": 13,
+    "tasa_deteccion": 100.0,
+    "falsos_positivos": 0,
+    "detalle": [
+      {
+        "caso": "Mismo segmento con dos descuentos",
+        "esperadas": 1,
+        "detectadas": 1,
+        "falsos_positivos": 0
+      },
+      {
+        "caso": "Reglas duplicadas",
+        "esperadas": 1,
+        "detectadas": 1,
+        "falsos_positivos": 0
+      },
+      {
+        "caso": "Intervalos que se cruzan",
+        "esperadas": 1,
+        "detectadas": 1,
+        "falsos_positivos": 0
+      },
+      {
+        "caso": "Intervalos que se tocan en un punto",
+        "esperadas": 1,
+        "detectadas": 1,
+        "falsos_positivos": 0
+      },
+      {
+        "caso": "Intervalos contiguos sin cruce",
+        "esperadas": 0,
+        "detectadas": 0,
+        "falsos_positivos": 0
+      },
+      {
+        "caso": "Campaña por tiempo y por categoría",
+        "esperadas": 1,
+        "detectadas": 1,
+        "falsos_positivos": 0
+      },
+      {
+        "caso": "Segmentos excluyentes por nivel",
+        "esperadas": 0,
+        "detectadas": 0,
+        "falsos_positivos": 0
+      },
+      {
+        "caso": "Negación que deja hueco",
+        "esperadas": 1,
+        "detectadas": 1,
+        "falsos_positivos": 0
+      },
+      {
+        "caso": "Rama SINO SI que choca con otra regla",
+        "esperadas": 1,
+        "detectadas": 1,
+        "falsos_positivos": 0
+      },
+      {
+        "caso": "Rama SINO SI excluida por la rama anterior",
+        "esperadas": 1,
+        "detectadas": 1,
+        "falsos_positivos": 0
+      },
+      {
+        "caso": "Descuento 0% no cuenta como colisión",
+        "esperadas": 0,
+        "detectadas": 0,
+        "falsos_positivos": 0
+      },
+      {
+        "caso": "Atributo entero sin valores en común",
+        "esperadas": 0,
+        "detectadas": 0,
+        "falsos_positivos": 0
+      },
+      {
+        "caso": "Tres reglas, dos colisiones",
+        "esperadas": 4,
+        "detectadas": 4,
+        "falsos_positivos": 0
+      },
+      {
+        "caso": "Disyunción con una rama en común",
+        "esperadas": 1,
+        "detectadas": 1,
+        "falsos_positivos": 0
+      },
+      {
+        "caso": "Edad en rangos excluyentes",
+        "esperadas": 0,
+        "detectadas": 0,
+        "falsos_positivos": 0
+      }
+    ]
+  },
+  "OE4": {
+    "objetos_json_generados": 13
+  },
+  "OE5": {
+    "total": 80,
+    "exitosas": 80,
+    "fallidas": 0,
+    "omitidas": 0,
+    "tasa_exito": 100.0,
+    "salida": "80 passed in 0.17s"
+  },
+  "RNF_rendimiento": {
+    "muestras": 240,
+    "promedio_ms": 0.28,
+    "p95_ms": 0.41,
+    "maximo_ms": 0.98,
+    "limite_ms": 200,
+    "cumple": true
+  }
+}

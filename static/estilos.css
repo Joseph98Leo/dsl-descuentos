@@ -519,3 +519,234 @@ td.er { font-family: var(--f-codigo); white-space: nowrap; }
   .editor-pie .boton-primario { width: 100%; justify-content: center; }
   .fuente .linea::before { width: 2.25rem; padding-right: 0.6rem; }
 }
+
+/* ==========================================================================
+   Etapas 2 a 4: compilador completo
+   ========================================================================== */
+
+.bien { color: var(--c-relacional); }
+.mal { color: var(--c-error); }
+.aviso-texto { color: oklch(48% 0.12 70); }
+.tenue { color: var(--tinta-tenue); }
+.nota { margin: 0 0 0.85rem; font-size: 0.875rem; color: var(--tinta-suave); }
+
+/* Fases en la portada */
+.fases-portada {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0;
+  margin: 2.25rem 0 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--regla-fuerte);
+}
+.fases-portada li {
+  padding: 0.85rem 1rem 0 0;
+  font-weight: 600;
+  font-size: 0.9375rem;
+}
+.fases-portada li + li { padding-left: 1rem; border-left: 1px solid var(--regla); }
+.fases-portada b {
+  display: block;
+  font: 400 1.75rem/1 var(--f-display);
+  color: var(--acento);
+  margin-bottom: 0.35rem;
+}
+.fases-portada span { display: block; font-weight: 400; font-size: 0.8125rem; color: var(--tinta-tenue); }
+
+/* Selector de ejemplos */
+.selector {
+  appearance: none;
+  min-height: 2.25rem;
+  padding: 0 2rem 0 0.85rem;
+  border: 1px solid var(--regla-fuerte);
+  border-radius: 999px;
+  background: var(--papel-elevado) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%235b5045' stroke-width='1.5' stroke-linecap='round'%3E%3Cpath d='M4.5 6.5 8 10l3.5-3.5'/%3E%3C/svg%3E") no-repeat right 0.6rem center / 0.9rem;
+  color: var(--tinta);
+  font: 500 0.875rem/1 var(--f-texto);
+  cursor: pointer;
+}
+.selector:hover { border-color: var(--tinta-suave); }
+
+/* Tubería de fases */
+.tuberia {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.5rem;
+  margin: 0 0 1rem;
+  padding: 0;
+  list-style: none;
+}
+.fase {
+  padding: 0.7rem 0.85rem;
+  border: 1px solid var(--regla);
+  border-top-width: 3px;
+  border-radius: var(--radio);
+  background: var(--papel-elevado);
+  font-size: 0.8125rem;
+  color: var(--tinta-suave);
+}
+.fase b { display: block; font-size: 0.9375rem; color: var(--tinta); margin-bottom: 0.15rem; }
+.fase-ok { border-top-color: var(--c-relacional); }
+.fase-error { border-top-color: var(--c-error); }
+.fase-error b { color: var(--c-error); }
+.fase-aviso { border-top-color: oklch(70% 0.14 75); }
+.fase-omitido { border-style: dashed; border-top-style: solid; border-top-color: var(--regla-fuerte); opacity: 0.7; }
+
+.veredicto { margin: 0 0 1.75rem; font-weight: 500; }
+
+/* Pestañas */
+.pestanas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  border-bottom: 1px solid var(--regla-fuerte);
+  margin: 0 0 1.5rem;
+}
+.pestana {
+  appearance: none;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  padding: 0.6rem 0.9rem;
+  background: none;
+  color: var(--tinta-suave);
+  font: 500 0.9375rem/1.2 var(--f-texto);
+  cursor: pointer;
+}
+.pestana:hover { color: var(--tinta); }
+.pestana[aria-selected="true"] { color: var(--tinta); border-bottom-color: var(--acento); }
+.panel { display: none; }
+.panel.activo { display: block; }
+.panel > h3:first-child, .panel h3 { margin-top: 1.5rem; }
+.vacio {
+  padding: 2rem;
+  border: 1px dashed var(--regla-fuerte);
+  border-radius: var(--radio);
+  color: var(--tinta-tenue);
+  text-align: center;
+}
+.aviso-suave { border-color: oklch(85% 0.08 80); background: oklch(96% 0.035 85); color: oklch(40% 0.09 70); }
+
+/* Chips seleccionables (tokens y reglas) */
+.selector-tokens { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0 0 1.5rem; }
+.chip-boton {
+  appearance: none;
+  border: 1px solid var(--regla);
+  border-radius: 4px;
+  padding: 0.4rem 0.6rem;
+  background: var(--papel-elevado);
+  font: 500 0.8125rem/1 var(--f-codigo);
+  color: var(--tinta-suave);
+  cursor: pointer;
+}
+.chip-boton:hover { border-color: var(--tinta-suave); }
+.chip-boton[aria-selected="true"] {
+  border-color: currentColor;
+  background: color-mix(in oklch, currentColor 10%, var(--papel-elevado));
+  box-shadow: inset 0 -2px 0 currentColor;
+}
+
+/* Grafos */
+.grafo {
+  margin: 0 0 1.5rem;
+  padding: 1rem;
+  border: 1px solid var(--regla);
+  border-radius: var(--radio);
+  background: var(--papel-elevado);
+  overflow: auto;
+  max-height: 40rem;
+  text-align: center;
+}
+.grafo svg { max-width: none; height: auto; }
+.dot { text-align: left; font-size: 0.75rem; margin: 0; }
+
+/* Autómatas */
+.ficha-er {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem 2.5rem;
+  margin: 0 0 1.25rem;
+  padding: 1rem 0;
+  border-top: 2px solid var(--tinta);
+  border-bottom: 1px solid var(--regla);
+}
+.ficha-er > div { display: grid; gap: 0.3rem; }
+.er-grande { font-size: 1.05rem; color: var(--acento); }
+.quintupla { margin: 0; display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 0.4rem 1rem; font-family: var(--f-codigo); font-size: 0.875rem; }
+.quintupla dt { font-weight: 600; color: var(--tinta-suave); }
+.quintupla dd { margin: 0; overflow-wrap: anywhere; }
+.subconjuntos { margin: 0; padding: 0; list-style: none; font: 400 0.8125rem/1.7 var(--f-codigo); }
+.probador { margin-top: 1.5rem; }
+.entrada {
+  width: 100%;
+  min-height: 2.4rem;
+  padding: 0 0.75rem;
+  margin-bottom: 0.5rem;
+  border: 1px solid var(--regla-fuerte);
+  border-radius: var(--radio);
+  background: var(--papel-elevado);
+  color: var(--tinta);
+  font: 400 0.9375rem/1 var(--f-codigo);
+}
+.entrada:focus { outline: 2px solid var(--acento); outline-offset: 1px; }
+
+/* Sintáctico */
+.muestra.compacta { margin: 0 0 1rem; white-space: pre-wrap; }
+.derivacion { margin: 0; padding: 0.75rem 1rem 0.75rem 2.75rem; font-size: 0.8125rem; }
+.derivacion li { padding: 0.35rem 0; border-bottom: 1px solid var(--regla); }
+.derivacion li:last-child { border-bottom: 0; }
+.derivacion li::marker { color: var(--tinta-tenue); font-variant-numeric: tabular-nums; }
+.derivacion .produccion { display: block; font: 500 0.75rem/1.4 var(--f-codigo); color: var(--c-reservada); }
+.derivacion code { font-size: 0.8125rem; overflow-wrap: anywhere; }
+
+/* Gramática */
+.producciones {
+  margin: 0;
+  padding: 1rem 1.25rem;
+  border: 1px solid var(--regla);
+  border-radius: var(--radio);
+  background: var(--papel-elevado);
+  font: 400 0.8125rem/1.75 var(--f-codigo);
+  overflow-x: auto;
+}
+.simbolos { margin: 0; display: grid; gap: 0.2rem; font-size: 0.875rem; }
+.simbolos dt { font-weight: 600; margin-top: 0.6rem; }
+.simbolos dd { margin: 0; color: var(--tinta-suave); font-family: var(--f-codigo); font-size: 0.8125rem; }
+
+/* JSON */
+.barra-json { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 0.75rem; margin: 0 0 0.85rem; }
+.json {
+  margin: 0;
+  padding: 1rem 1.25rem;
+  max-height: 38rem;
+  overflow: auto;
+  border: 1px solid var(--regla);
+  border-radius: var(--radio);
+  background: var(--papel-elevado);
+  font: 400 0.8125rem/1.6 var(--f-codigo);
+}
+
+.solo-imprimir { display: none; }
+
+@media (max-width: 52rem) {
+  .fases-portada, .tuberia { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .fases-portada li:nth-child(3) { border-left: 0; padding-left: 0; }
+}
+
+/* Impresión / Guardar como PDF: todas las fases, sin controles. */
+@media print {
+  .cabecera, .portada, #enunciado, #automatas, #gramatica, #catalogo, .pie, form, .no-imprimir, .pestanas, .selector-tokens { display: none !important; }
+  .seccion { padding: 0; border: 0; }
+  #compilador > .contenedor > h2, #compilador .intro-seccion { display: none; }
+  .resultados { margin: 0; }
+  .panel { display: block !important; break-before: page; }
+  .panel:first-of-type { break-before: auto; }
+  .solo-imprimir { display: block; }
+  .marco-tabla, .marco-tabla.alto, .grafo, .json { max-height: none; overflow: visible; }
+  .fuente .linea { animation: none !important; }
+  body { background: #fff; }
+}
+
+/* Estados de regla en una sola línea */
+td > b { white-space: nowrap; }

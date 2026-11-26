@@ -1,0 +1,80 @@
+{
+  "_descripcion": "Conjuntos de reglas con solapamientos configurados a propósito (OE3). 'esperadas' lista los pares de reglas que colisionan; un conjunto sin pares no debe reportar ninguna colisión.",
+  "casos": [
+    {
+      "nombre": "Mismo segmento con dos descuentos",
+      "reglas": "SI CLIENTE.nivel = VIP ENTONCES APLICAR DESCUENTO(15%)\nSI COMPRA.total > 500 ENTONCES APLICAR DESCUENTO(10%)",
+      "esperadas": [["R1", "R2"]]
+    },
+    {
+      "nombre": "Reglas duplicadas",
+      "reglas": "SI COMPRA.total > 300 ENTONCES APLICAR DESCUENTO(5%)\nSI COMPRA.total > 300 ENTONCES APLICAR DESCUENTO(5%)",
+      "esperadas": [["R1", "R2"]]
+    },
+    {
+      "nombre": "Intervalos que se cruzan",
+      "reglas": "SI COMPRA.total >= 100 Y COMPRA.total <= 300 ENTONCES APLICAR DESCUENTO(5%)\nSI COMPRA.total >= 250 ENTONCES APLICAR DESCUENTO(8%)",
+      "esperadas": [["R1", "R2"]]
+    },
+    {
+      "nombre": "Intervalos que se tocan en un punto",
+      "reglas": "SI COMPRA.total <= 200 ENTONCES APLICAR DESCUENTO(3%)\nSI COMPRA.total >= 200 ENTONCES APLICAR DESCUENTO(6%)",
+      "esperadas": [["R1", "R2"]]
+    },
+    {
+      "nombre": "Intervalos contiguos sin cruce",
+      "reglas": "SI COMPRA.total < 200 ENTONCES APLICAR DESCUENTO(3%)\nSI COMPRA.total >= 200 ENTONCES APLICAR DESCUENTO(6%)",
+      "esperadas": []
+    },
+    {
+      "nombre": "Campaña por tiempo y por categoría",
+      "reglas": "SI TIEMPO(navidad) ENTONCES APLICAR DESCUENTO(10%)\nSI COMPRA.categoria = juguetes ENTONCES APLICAR DESCUENTO(12%)",
+      "esperadas": [["R1", "R2"]]
+    },
+    {
+      "nombre": "Segmentos excluyentes por nivel",
+      "reglas": "SI CLIENTE.nivel = VIP ENTONCES APLICAR DESCUENTO(15%)\nSI CLIENTE.nivel = ORO ENTONCES APLICAR DESCUENTO(10%)\nSI CLIENTE.nivel != VIP Y CLIENTE.nivel != ORO ENTONCES APLICAR DESCUENTO(5%)",
+      "esperadas": []
+    },
+    {
+      "nombre": "Negación que deja hueco",
+      "reglas": "SI NO (CLIENTE.tipo = nuevo) ENTONCES APLICAR DESCUENTO(4%)\nSI CLIENTE.tipo = frecuente ENTONCES APLICAR DESCUENTO(6%)",
+      "esperadas": [["R1", "R2"]]
+    },
+    {
+      "nombre": "Rama SINO SI que choca con otra regla",
+      "reglas": "SI CLIENTE.nivel = VIP ENTONCES APLICAR DESCUENTO(15%) SINO SI COMPRA.total > 1000 ENTONCES APLICAR DESCUENTO(10%)\nSI CLIENTE.nivel = PLATA Y COMPRA.total > 2000 ENTONCES APLICAR DESCUENTO(7%)",
+      "esperadas": [["R1", "R2"]]
+    },
+    {
+      "nombre": "Rama SINO SI excluida por la rama anterior",
+      "reglas": "SI CLIENTE.nivel = VIP ENTONCES APLICAR DESCUENTO(15%) SINO SI COMPRA.total > 1000 ENTONCES APLICAR DESCUENTO(10%)\nSI CLIENTE.nivel = VIP Y COMPRA.total < 100 ENTONCES APLICAR DESCUENTO(2%)",
+      "esperadas": [["R1", "R2"]]
+    },
+    {
+      "nombre": "Descuento 0% no cuenta como colisión",
+      "reglas": "SI COMPRA.total > 100 ENTONCES APLICAR DESCUENTO(5%) SINO APLICAR DESCUENTO(0%)\nSI COMPRA.total <= 100 ENTONCES APLICAR DESCUENTO(2%)",
+      "esperadas": []
+    },
+    {
+      "nombre": "Atributo entero sin valores en común",
+      "reglas": "SI COMPRA.cantidad > 2 Y COMPRA.cantidad < 4 ENTONCES APLICAR DESCUENTO(5%)\nSI COMPRA.cantidad != 3 ENTONCES APLICAR DESCUENTO(2%)",
+      "esperadas": []
+    },
+    {
+      "nombre": "Tres reglas, dos colisiones",
+      "reglas": "SI COMPRA.canal = web ENTONCES APLICAR DESCUENTO(3%)\nSI COMPRA.canal = web Y COMPRA.total > 200 ENTONCES APLICAR DESCUENTO(5%)\nSI COMPRA.canal = tienda Y COMPRA.total > 200 ENTONCES APLICAR DESCUENTO(4%)\nSI COMPRA.canal = app O CLIENTE.nivel = VIP ENTONCES APLICAR DESCUENTO(6%)",
+      "esperadas": [["R1", "R2"], ["R1", "R4"], ["R2", "R4"], ["R3", "R4"]]
+    },
+    {
+      "nombre": "Disyunción con una rama en común",
+      "reglas": "SI CLIENTE.nivel = BRONCE O COMPRA.categoria = hogar ENTONCES APLICAR DESCUENTO(4%)\nSI COMPRA.categoria = hogar Y COMPRA.total > 80 ENTONCES APLICAR DESCUENTO(6%)",
+      "esperadas": [["R1", "R2"]]
+    },
+    {
+      "nombre": "Edad en rangos excluyentes",
+      "reglas": "SI CLIENTE.edad < 25 ENTONCES APLICAR DESCUENTO(8%)\nSI CLIENTE.edad >= 65 ENTONCES APLICAR DESCUENTO(10%)",
+      "esperadas": []
+    }
+  ]
+}

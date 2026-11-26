@@ -1,92 +1,103 @@
 """
-Aplicación Flask - Etapa 1 del Trabajo Final de Compiladores (USIL 2026-2).
+Aplicación Flask del compilador DSL de reglas de descuento (USIL 2026-2).
 
-Permite escribir o subir un archivo con reglas del DSL de descuentos y muestra
-los TOKENS y LEXEMAS que reconoce el analizador léxico.
+Rutas
+  GET  /                 Interfaz del compilador (analizador.html)
+  GET  /hola             "Hola Mundo" de la Etapa 1 (index.html)
+  POST /api/compilar     Compila las reglas: {"codigo": "..."} o un archivo en el campo "archivo"
+  POST /api/tokens       Solo el análisis léxico (Etapa 1)
+  GET  /api/automatas    ER, AFND, AFD y AFD mínimo de cada token (Etapa 2)
+  GET  /api/catalogo     Catálogo de tokens y tabla de símbolos del dominio
 """
 
 import os
+from functools import lru_cache
 from pathlib import Path
 
-from flask import Flask, jsonify, render_template, request
+from flask import Flask, jsonify, request, send_from_directory
 
-from lexer import CATALOGO, NOMBRE_CATEGORIA, analizar, resaltar, resumen
+import automatas
+import compilador
+import semantico
+from lexer import CATALOGO, NOMBRE_CATEGORIA, analizar
 
 BASE = Path(__file__).resolve().parent
-EJEMPLO = (BASE / "ejemplos" / "reglas_ejemplo.dsl").read_text(encoding="utf-8")
 EXTENSIONES = {".dsl", ".txt", ".reglas"}
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder="static")
 app.config["MAX_CONTENT_LENGTH"] = 256 * 1024  # 256 KB por archivo
+app.json.ensure_ascii = False
 
 
 def _leer_entrada():
-    """Obtiene el código fuente desde el archivo subido o desde el cuadro de texto."""
+    """Obtiene el código fuente del archivo subido, del JSON o del formulario."""
     archivo = request.files.get("archivo")
     if archivo and archivo.filename:
-        extension = Path(archivo.filename).suffix.lower()
-        if extension not in EXTENSIONES:
-            return None, archivo.filename, (
-                f"El archivo «{archivo.filename}» no es válido. Sube un archivo .dsl, .txt o .reglas."
-            )
+        if Path(archivo.filename).suffix.lower() not in EXTENSIONES:
+            return None, f"El archivo «{archivo.filename}» no es válido. Sube un archivo .dsl, .txt o .reglas."
         try:
-            return archivo.read().decode("utf-8"), archivo.filename, None
+            return archivo.read().decode("utf-8"), None
         except UnicodeDecodeError:
-            return None, archivo.filename, "El archivo no está en UTF-8. Guárdalo como texto UTF-8 e inténtalo de nuevo."
-    return request.form.get("codigo", ""), None, None
+            return None, "El archivo no está en UTF-8. Guárdalo como texto UTF-8 e inténtalo de nuevo."
+    datos = request.get_json(silent=True) or {}
+    return datos.get("codigo", request.form.get("codigo", "")), None
 
 
-@app.route("/", methods=["GET", "POST"])
+@app.get("/")
 def inicio():
-    codigo, nombre_archivo, error_entrada, resultado = EJEMPLO, None, None, None
+    return send_from_directory(BASE, "analizador.html")
 
-    if request.method == "POST":
-        texto, nombre_archivo, error_entrada = _leer_entrada()
-        if texto is not None:
-            codigo = texto
-            if not codigo.strip():
-                error_entrada = "No hay nada que analizar: escribe una regla o sube un archivo."
-            else:
-                tokens, errores = analizar(codigo)
-                resultado = {
-                    "tokens": tokens,
-                    "errores": errores,
-                    "resumen": resumen(tokens),
-                    "lineas": resaltar(codigo),
-                }
 
-    return render_template(
-        "index.html",
-        codigo=codigo,
-        ejemplo=EJEMPLO,
-        nombre_archivo=nombre_archivo,
-        error_entrada=error_entrada,
-        resultado=resultado,
-        catalogo=CATALOGO,
-        nombres=NOMBRE_CATEGORIA,
-    )
+@app.get("/analizador.html")
+def analizador():
+    return send_from_directory(BASE, "analizador.html")
+
+
+@app.get("/hola")
+def hola():
+    return send_from_directory(BASE, "index.html")
+
+
+@app.get("/ejemplos/<path:nombre>")
+def ejemplos(nombre):
+    return send_from_directory(BASE / "ejemplos", nombre, mimetype="text/plain")
+
+
+@app.post("/api/compilar")
+def api_compilar():
+    texto, error = _leer_entrada()
+    if error:
+        return jsonify(error=error), 400
+    return jsonify(compilador.compilar(texto))
 
 
 @app.post("/api/tokens")
 def api_tokens():
-    """Versión JSON del análisis: recibe {"codigo": "..."}."""
-    datos = request.get_json(silent=True) or {}
-    tokens, errores = analizar(datos.get("codigo", ""))
+    texto, error = _leer_entrada()
+    if error:
+        return jsonify(error=error), 400
+    tokens, errores = analizar(texto)
     return jsonify(tokens=[t.to_dict() for t in tokens], errores=errores)
+
+
+@lru_cache(maxsize=1)
+def _automatas():
+    return {"tokens": automatas.automatas_de_tokens()}
+
+
+@app.get("/api/automatas")
+def api_automatas():
+    return jsonify(_automatas())
+
+
+@app.get("/api/catalogo")
+def api_catalogo():
+    return jsonify(catalogo=CATALOGO, nombres=NOMBRE_CATEGORIA, dominio=semantico.DOMINIO)
 
 
 @app.errorhandler(413)
 def archivo_grande(_):
-    return render_template(
-        "index.html",
-        codigo=EJEMPLO,
-        ejemplo=EJEMPLO,
-        nombre_archivo=None,
-        error_entrada="El archivo supera el límite de 256 KB.",
-        resultado=None,
-        catalogo=CATALOGO,
-        nombres=NOMBRE_CATEGORIA,
-    ), 413
+    return jsonify(error="El archivo supera el límite de 256 KB."), 413
 
 
 if __name__ == "__main__":
